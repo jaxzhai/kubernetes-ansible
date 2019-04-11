@@ -1,0 +1,28 @@
+---
+- name: 解压
+  unarchive:
+    src: /root/kubernetes-ansible/roles/etcd/files/etcd-v3.3.12-linux-amd64.tar.gz
+    dest: /root/kubernetes-ansible/roles/etcd/files/
+  when: etcdname == "etcd01"
+- name: 分发 etcd 二进制文件
+  copy: 
+    src: /root/kubernetes-ansible/roles/etcd/files/etcd-v3.3.12-linux-amd64/{{ item }}
+    dest: /usr/local/bin/{{ item }}
+    mode: 755
+  with_items:
+    - etcd
+    - etcdctl
+- name: 分发配置文件
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "templates/etcd.j2", dest: "/etc/kubernetes/manifests/etcd" }
+    - { src: "templates/etcd.service.j2", dest: "/usr/lib/systemd/system/etcd.service" }
+
+- name: 分发证书
+  copy:
+    src: "{{ item }}"
+    dest: /etc/kubernetes/pki/
+  with_fileglob:
+    - '/etc/kubernetes/pki/*'

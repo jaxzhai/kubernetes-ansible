@@ -1,0 +1,13 @@
+---
+- name: 创建 flanneld 的 systemd unit 文件
+  template: 
+    src: /root/kubernetes-ansible/roles/flannel/templates/flanneld.service.j2
+    dest: /usr/lib/systemd/system/flanneld.service
+
+- name: 启动 flanneld 服务
+  systemd:
+    name: flanneld
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+

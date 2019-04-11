@@ -1,0 +1,13 @@
+---
+- name: 分发配置文件
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "/root/kubernetes-ansible/roles/kube-proxy/templates/kube-proxy-config.yaml.j2", dest: "/etc/kubernetes/kube-proxy-config.yaml" }
+    - { src: "/root/kubernetes-ansible/roles/kube-proxy/templates/kube-proxy.service.j2", dest: "/usr/lib/systemd/system/kube-proxy.service" }
+
+- name: 创建数据目录
+  file:
+    path: "{{ K8S_DIR }}/kube-proxy"
+    state: directory

@@ -1,0 +1,18 @@
+---
+- name: 渲染 create-ca.sh 模板 
+  template: 
+    src: templates/create-ca.sh.j2
+    dest: /etc/kubernetes/pki/create-ca.sh
+
+- name: 安装cfssl工具集
+  get_url: 
+    url: "{{ item.url }}"
+    dest: /usr/local/bin/{{ item.dest }}
+    mode: 755
+  with_items:
+    - { url: "https://pkg.cfssl.org/R1.2/cfssl_linux-amd64", dest: 'cfssl' }
+    - { url: "https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64", dest: 'cfssljson' }
+    - { url: "https://pkg.cfssl.org/R1.2/cfssl-certinfo_linux-amd64", dest: 'cfssl-certinfo' }
+
+- name: 生成证书
+  shell: cd /etc/kubernetes/pki && sh create-ca.sh

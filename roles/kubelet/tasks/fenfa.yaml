@@ -1,0 +1,14 @@
+---
+- name: 分发配置文件
+  template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: "/root/kubernetes-ansible/roles/kubelet/templates/kubelet-config.yaml.j2", dest: "/etc/kubernetes/kubelet-config.yaml" }
+    - { src: "/root/kubernetes-ansible/roles/kubelet/templates/kubelet.service.j2", dest: "/usr/lib/systemd/system/kubelet.service" }
+    - { src: "/root/kubernetes-ansible/roles/kubelet/templates/csr-crb.yaml.j2", dest: "/etc/kubernetes/csr-crb.yaml"}
+
+- name: 创建数据目录
+  file:
+    path: "{{ K8S_DIR }}/kubelet"
+    state: directory

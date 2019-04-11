@@ -1,0 +1,7 @@
+---
+- name: 启动 kube-proxy 服务
+  systemd:
+    name: kube-proxy
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

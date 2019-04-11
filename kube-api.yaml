@@ -1,0 +1,5 @@
+---
+- hosts: kubemaster
+  gather_facts: yes
+  roles:
+    - kube-api

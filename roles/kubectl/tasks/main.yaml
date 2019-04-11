@@ -1,0 +1,3 @@
+- include: kubectl.yaml
+- { include: kubeconfig.yaml, when: hostname == 'k8s-m1' }
+- include: fenfa.yaml

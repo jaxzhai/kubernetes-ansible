@@ -1,0 +1,28 @@
+---
+- name: 下载kubernetes-server相关二进制文件
+  get_url:
+    url: https://dl.k8s.io/v1.14.1/kubernetes-server-linux-amd64.tar.gz
+    dest: /root/kubernetes-ansible/roles/kubectl/files/
+
+- name: 解压kubernetes-server
+  unarchive:
+    src: /root/kubernetes-ansible/roles/kubectl/files/kubernetes-server-linux-amd64.tar.gz
+    dest: /root/kubernetes-ansible/roles/kubectl/files/
+  when: hostname  == "k8s-m1"
+- name: copy kubeserver-file
+  copy:
+    src: /root/kubernetes-ansible/roles/kubectl/files/kubernetes/server/bin/{{ item }}
+    dest:  /usr/local/bin
+    mode: 755
+  with_items:
+    - kubectl
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    - kubeadm
+    - kubelet
+    - kubectl
+    - kube-proxy
+
+
+

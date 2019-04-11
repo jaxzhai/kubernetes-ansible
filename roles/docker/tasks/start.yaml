@@ -1,0 +1,11 @@
+---
+- name: 关闭iptable服务
+  shell: |
+    /usr/sbin/iptables -F && /usr/sbin/iptables -X && /usr/sbin/iptables -F -t nat && /usr/sbin/iptables -X -t nat && /usr/sbin/iptables -P FORWARD ACCEPT
+
+- name: 启动docker服务
+  systemd:
+    name: docker
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

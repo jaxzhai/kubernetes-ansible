@@ -1,0 +1,27 @@
+---
+- name: 创建flannel目录
+  file:
+    path: /root/kubernetes-ansible/roles/flannel/files/flannel
+    state: directory
+  when: hostname  == "k8s-m1"
+
+- name: 解压flannel
+  unarchive:
+    src: /root/kubernetes-ansible/roles/flannel/files/flannel-v0.11.0-linux-amd64.tar.gz
+    dest: /root/kubernetes-ansible/roles/flannel/files/flannel
+  when: hostname  == "k8s-m1"
+
+- name: 分发flanneld 二进制文件到集群所有节点
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 755
+  with_items:
+    - { src: '/root/kubernetes-ansible/roles/flannel/files/flannel/flanneld', dest: '/usr/local/bin/flanneld' }
+    - { src: '/root/kubernetes-ansible/roles/flannel/files/flannel/mk-docker-opts.sh', dest: '/usr/local/bin/mk-docker-opts.sh' }
+
+- name: 向etcd写入集群Pod网段信息
+  shell: |
+    etcdctl --endpoints={{ ETCD_ENDPOINTS }} --ca-file=/etc/kubernetes/pki/ca.pem --cert-file=/etc/kubernetes/pki/flanneld.pem --key-file=/etc/kubernetes/pki/flanneld-key.pem set /kubernetes/network/config '{"Network":"'{{ CLUSTER_CIDR }}'", "SubnetLen": 21, "Backend": {"Type": "vxlan"}}'
+  when: hostname  == "k8s-m1"
+

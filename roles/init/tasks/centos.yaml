@@ -1,0 +1,117 @@
+- name: 安装依赖
+  yum: 
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - conntrack
+    - ipvsadm
+    - ipset 
+    - jq
+    - iptables
+    - curl
+    - sysstat
+    - net-tools
+    - libseccomp 
+    
+- name: 加载ipvs内核
+  modprobe:
+    state: present
+    name: "{{ item }}"
+  with_items:
+    - ip_vs
+    - ip_vs_rr
+    - ip_vs_wrr
+    - ip_vs_sh
+    - nf_conntrack_ipv4
+
+- name: 关闭防火墙,NetworkManager,dnsmasq
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  with_items:
+    - firewalld
+    - NetworkManager
+    - dnsmasq
+  ignore_errors: True
+
+- name: 永久关闭 selinux
+  lineinfile:
+    dest: /etc/selinux/config
+    regexp: "^SELINUX="
+    line: "SELINUX=disabled"
+
+- name: 临时关闭 selinux
+  shell: "setenforce 0"
+  failed_when: false
+
+- name: 临时关闭swap
+  shell: "swapoff -a"
+
+- name: 分发modules-load和sysctl的conf
+  copy:
+    src: files/{{ item.src }}
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: 'k8s-ipvs.conf', dest: "/etc/modules-load.d/" }
+    - { src: 'kubernetes.conf', dest: "/etc/security/limits.d/" }
+
+- name: 分发sysctl文件
+  template:
+    src: k8s-sysctl.conf.j2
+    dest: /etc/sysctl.d/
+
+- name: enable --now systemd-modules-load
+  systemd:
+    name: systemd-modules-load
+    state: started
+    enabled: yes
+
+- name: 设置系统时区
+  timezone:
+    name: "Asia/Shanghai"
+  when: TimeZone is defined
+
+- name: prepare some dirs
+  file: name={{ item }} state=directory
+  with_items:
+  - /etc/kubernetes/pki
+  - /etc/kubernetes/manifests
+  - /var/log/kubernetes
+  - /var/lib/kubelet
+  - /etc/kubernetes/data
+
+- block:
+    - name: 导入GPG key
+      rpm_key:
+        state: present
+        key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+    
+    - name: 导入elrepo
+      yum:
+        name: http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+        state: present
+    
+    - name: 升级到最新内核
+      yum:
+        name: 
+          - kernel-ml
+          - kernel-ml-devel
+        disablerepo: "*"
+        enablerepo: "elrepo-kernel"
+    
+    - name: 修改默认启动内核到新内核
+      shell: grub2-set-default  0 && grub2-mkconfig -o /etc/grub2.cfg
+  when: kernel != 'false'
+
+- name: 设置内核参数适应docker
+  shell: |
+    grubby --args="user_namespace.enable=1" --update-kernel=$(grubby --default-kernel)
+
+- name: Reboot host
+  shell: sleep 2 && shutdown -r now "reboot"
+  async: 1
+  poll: 0
+  ignore_errors: yes
+  tags:
+    - reboot

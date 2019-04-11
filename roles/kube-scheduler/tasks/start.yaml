@@ -1,0 +1,7 @@
+---
+- name: 启动 kube-scheduler 服务
+  systemd:
+    name: kube-scheduler
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

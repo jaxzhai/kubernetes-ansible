@@ -1,0 +1,4 @@
+---
+- name: etcd建康检查
+  shell: |
+    ETCDCTL_API=3 etcdctl --endpoints={{ ETCD_ENDPOINTS }} --cacert=/etc/kubernetes/pki/ca.pem --cert=/etc/kubernetes/pki/etcd.pem --key=/etc/kubernetes/pki/etcd-key.pem -w table endpoint status

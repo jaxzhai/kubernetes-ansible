@@ -1,0 +1,12 @@
+- name: 分配配置文件
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - { src: '/root/kubernetes-ansible/roles/kube-scheduler/templates/kube-scheduler.service.j2', dest: '/usr/lib/systemd/system/kube-scheduler.service' }
+    - { src: '/root/kubernetes-ansible/roles/kube-scheduler/templates/kube-scheduler.yaml.j2', dest: '/etc/kubernetes/kube-scheduler.yaml' } 
+
+- name: 创建数据目录
+  file:
+    path: "{{ K8S_DIR }}/kube-scheduler"
+    state: directory

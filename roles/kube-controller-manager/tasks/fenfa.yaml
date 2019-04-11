@@ -1,0 +1,10 @@
+---
+- name: 分配配置文件
+  template:
+    src: /root/kubernetes-ansible/roles/kube-controller-manager/templates/kube-controller-manager.service.j2
+    dest: /usr/lib/systemd/system/kube-controller-manager.service
+
+- name: 创建数据目录
+  file:
+    path: "{{ K8S_DIR }}/kube-controller-manager"
+    state: directory

@@ -1,0 +1,7 @@
+---
+- name: 启动etcd并设置成开机启动
+  systemd:
+    name: etcd 
+    state: restarted 
+    enabled: yes 
+    daemon_reload: yes

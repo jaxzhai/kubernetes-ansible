@@ -1,0 +1,5 @@
+---
+- hosts: kubenode
+  gather_facts: yes
+  roles:
+    - kubelet

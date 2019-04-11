@@ -1,0 +1,5 @@
+---
+- hosts: allnode
+  gather_facts: yes
+  roles:
+    - flannel 

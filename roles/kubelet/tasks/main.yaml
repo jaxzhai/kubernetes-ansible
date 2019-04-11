@@ -1,0 +1,4 @@
+- include: kubeconfig.yaml 
+- include: fenfa.yaml 
+- include: approvecrs.yaml
+- include: start.yaml

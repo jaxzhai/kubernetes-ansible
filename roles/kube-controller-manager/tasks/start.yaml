@@ -1,0 +1,7 @@
+---
+- name: 启动 kube-controller-manager 服务
+  systemd:
+    name: kube-controller-manager
+    state: restarted
+    enabled: yes
+    daemon_reload: yes

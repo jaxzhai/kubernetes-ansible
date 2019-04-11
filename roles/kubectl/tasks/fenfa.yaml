@@ -1,0 +1,10 @@
+---
+- name: 创建kube目录
+  file:
+    path: /root/.kube
+    state: directory
+
+- name: 分发文件
+  copy:
+    src: /etc/kubernetes/manifests/kubectl.kubeconfig
+    dest: /root/.kube/config

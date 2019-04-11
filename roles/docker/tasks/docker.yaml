@@ -1,0 +1,21 @@
+---
+- name: 解压docker
+  unarchive:
+    src: /root/kubernetes-ansible/roles/docker/files/docker-18.09.2.tgz
+    dest: /root/kubernetes-ansible/roles/docker/files/
+  when: hostname  == "k8s-m1"
+
+- name: copy docker-file
+  copy: 
+    src: /root/kubernetes-ansible/roles/docker/files/docker/{{ item }}
+    dest: /usr/local/bin
+    mode: 755
+  with_items:
+    - ctr
+    - containerd-shim
+    - containerd
+    - docker-proxy
+    - docker
+    - dockerd
+    - runc
+    - docker-init

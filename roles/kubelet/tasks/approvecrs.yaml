@@ -1,0 +1,5 @@
+---
+- name: 自动 approve CSR 请求
+  shell: |
+    kubectl apply -f  /etc/kubernetes/csr-crb.yaml
+  when: hostname == "k8s-n1"

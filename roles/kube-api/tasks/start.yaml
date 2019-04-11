@@ -1,0 +1,11 @@
+---
+- name: 启动 kube-apiserver 服务
+  systemd:
+    name: kube-apiserver
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: 授予 kubernetes 证书访问 kubelet API 的权限
+  shell: |
+    kubectl create clusterrolebinding kube-apiserver:kubelet-apis --clusterrole=system:kubelet-api-admin --user kubernetes
