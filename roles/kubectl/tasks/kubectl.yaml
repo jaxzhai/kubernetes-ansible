@@ -3,7 +3,10 @@
   get_url:
     url: https://dl.k8s.io/v1.14.1/kubernetes-server-linux-amd64.tar.gz
     dest: /root/kubernetes-ansible/roles/kubectl/files/
-
+  when:
+    - hostname  == "k8s-m1"
+    - download  == "true"
+   
 - name: 解压kubernetes-server
   unarchive:
     src: /root/kubernetes-ansible/roles/kubectl/files/kubernetes-server-linux-amd64.tar.gz
