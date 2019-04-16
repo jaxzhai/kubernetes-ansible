@@ -20,9 +20,3 @@
     - { src: "templates/etcd.j2", dest: "/etc/kubernetes/manifests/etcd" }
     - { src: "templates/etcd.service.j2", dest: "/usr/lib/systemd/system/etcd.service" }
 
-- name: 分发证书
-  copy:
-    src: "{{ item }}"
-    dest: /etc/kubernetes/pki/
-  with_fileglob:
-    - '/etc/kubernetes/pki/*'
