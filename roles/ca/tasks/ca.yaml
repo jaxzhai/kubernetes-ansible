@@ -16,3 +16,10 @@
 
 - name: 生成证书
   shell: cd /etc/kubernetes/pki && sh create-ca.sh
+  
+- name: 分发证书
+  copy:
+    src: "{{ item }}"
+    dest: /etc/kubernetes/pki/
+  with_fileglob:
+    - '/etc/kubernetes/pki/*'
